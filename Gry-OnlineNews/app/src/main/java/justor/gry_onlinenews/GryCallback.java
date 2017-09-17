@@ -9,5 +9,5 @@ import justor.gry_onlinenews.Gry;
 import java.util.List;
 
 public interface GryCallback {
-    void onArticlesReceived(List<Gry> var1, boolean var2);
+    void GryReceived(List<Gry> var1, boolean var2);
 }
