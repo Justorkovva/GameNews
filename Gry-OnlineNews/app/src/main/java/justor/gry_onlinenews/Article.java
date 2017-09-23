@@ -28,6 +28,7 @@ public class Article extends AppCompatActivity {
         WebView myWebView = (WebView) findViewById(R.id.webView);
         myWebView.loadUrl(url);
         myWebView.getSettings().setJavaScriptEnabled(true);
+        setTitle(title);
 
         myWebView.setWebViewClient(new WebViewClient() {
             @Override

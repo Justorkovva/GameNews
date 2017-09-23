@@ -11,10 +11,12 @@ import android.support.v7.widget.RecyclerView;
 import justor.gry_onlinenews.GryTask;
 
 import static justor.gry_onlinenews.MainActivity.URL;
+import static justor.gry_onlinenews.MainActivity.stat_title;
 
 public class Recycler extends AppCompatActivity {
 
     private GryTask _task = null;
+
     private GryAdapter _adapter;
 
     @Override
@@ -22,13 +24,18 @@ public class Recycler extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.recycler);
         Context context = Recycler.this;
+        setTitle(stat_title);
 
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        GryTask _task = null;
+
+        GryAdapter _adapter;
+
+
+        final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         _adapter = new GryAdapter(this, context);
         recyclerView.setAdapter(_adapter);
-        loadNext();
 
         final ProgressBar progress = (ProgressBar) findViewById(R.id.progress);
         _adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
@@ -36,20 +43,21 @@ public class Recycler extends AppCompatActivity {
             public void onChanged() {
                 progress.setVisibility(View.GONE);
             }
+
+
         });
+
+
+         _task = new GryTask(_adapter);
+        _task.execute(URL);
     }
 
-    public void loadNext() {
-        if (_task != null && _task.getStatus() != AsyncTask.Status.FINISHED)
-            return;
-
-        _task = new GryTask(_adapter, URL);
-        _task.execute();
-    }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        _task.cancel(true);
+     //   _task.cancel(true);
     }
+
+
 }

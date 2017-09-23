@@ -1,94 +1,47 @@
 package justor.gry_onlinenews;
 
 import android.os.AsyncTask;
-import java.io.IOException;
+import android.util.Log;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
-import java.nio.CharBuffer;
-import java.security.SecureRandom;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import justor.gry_onlinenews.Gry;
-import justor.gry_onlinenews.GryCallback;
+import org.w3c.dom.Document;
+import javax.xml.parsers.DocumentBuilderFactory;
 
-public class GryTask extends AsyncTask<Void, Void, GryTask.GryList> {
 
-    private static final DateFormat _dateParser;
-    private final GryCallback _callback;
-    private final String url;
-    //private final int button;
+public class GryTask extends AsyncTask<String, Void, Document> {
 
-    public GryTask(GryCallback callback, String url) {
-        this._callback = callback;
-        this.url = url;
-        //this.button = button;
-    }
+    interface DocumentConsumer {
+        void setXMLDocument(Document document);}
 
-    protected GryTask.GryList doInBackground(Void... params) {
-        try {
-            Thread.sleep((long)((new SecureRandom()).nextInt(2000) + 2000));
-            URL e = new URL(url);
-            HttpURLConnection con = (HttpURLConnection)e.openConnection();
-            JSONObject json = new JSONObject(this._toString(con.getInputStream()));
-            GryTask.GryList list = new GryTask.GryList(json.getBoolean("has_more_items"));
-            JSONArray items = json.getJSONArray("items");
+    private DocumentConsumer _consumer;
 
-            for(int i = 0; i < items.length(); ++i) {
-                JSONObject item = items.getJSONObject(i);
-                list.gra.add(new Gry(item.getString("title"), item.getString("link"), item.getString("description"), item.getString("author"), _dateParser.parse(item.getString("date")), item.getString("category"), item.getString("guid")));
+    public GryTask(DocumentConsumer consumer) {_consumer=consumer;} //dodac context
+
+    @Override
+    protected Document doInBackground(String... params)
+    {
+        try{
+        Thread.sleep(5000);
+
+        URL url = new URL(params[0]);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            InputStream stream = connection.getInputStream();
+            try {
+                return DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(stream);
             }
-
-            return list;
-        } catch (IOException var9) {
-            throw new RuntimeException(var9);
-        } catch (JSONException var10) {
-            throw new RuntimeException(var10);
-        } catch (ParseException var11) {
-            throw new RuntimeException(var11);
-        } catch (InterruptedException var12) {
-            return null;
-        }
+            finally {
+                stream.close();
+            }
     }
+    catch (Exception ex) {
+        Log.e("XMLAsyncTask", "Exception while downloading", ex);
+        throw new RuntimeException(ex);
+    }}
 
-    private String _toString(InputStream stream) throws IOException {
-        InputStreamReader reader = new InputStreamReader(stream);
-        StringBuilder str = new StringBuilder();
-        CharBuffer buf = CharBuffer.allocate(2048);
-
-        while(reader.read(buf) != -1) {
-            buf.flip();
-            str.append(buf);
-            buf.clear();
-        }
-
-        return str.toString();
+    @Override
+    protected void onPostExecute(Document result) {
+        Log.e("XMLAsyncTask", "Finished");
+        _consumer.setXMLDocument(result);
     }
-
-    protected void onPostExecute(GryTask.GryList result) {
-        if(result != null) {
-            this._callback.GryReceived(result.gra, result.hasMore);
-        }
-
     }
-
-    static {_dateParser = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.ENGLISH);}
-
-    public static class GryList {
-        public final List<Gry> gra = new ArrayList();
-        public final boolean hasMore;
-
-        public GryList(boolean hasMore) {
-            this.hasMore = hasMore;
-        }
-    }
-}
