@@ -16,13 +16,13 @@ public class GryTask extends AsyncTask<String, Void, Document> {
 
     private DocumentConsumer _consumer;
 
-    public GryTask(DocumentConsumer consumer) {_consumer=consumer;} //dodac context
+    public GryTask(DocumentConsumer consumer) {_consumer=consumer;}
 
     @Override
     protected Document doInBackground(String... params)
     {
         try{
-        Thread.sleep(5000);
+        Thread.sleep(3000);
 
         URL url = new URL(params[0]);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();

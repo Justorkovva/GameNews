@@ -1,6 +1,5 @@
 package justor.gry_onlinenews;
 
-import android.provider.DocumentsContract;
 import android.support.v7.widget.RecyclerView;
 import android.content.Context;
 import android.content.Intent;
@@ -78,11 +77,7 @@ public class GryAdapter extends RecyclerView.Adapter<GryAdapter.GryViewHolder> i
             });
         }
 
-        public void bind(Gry _gry) {
-            _title.setText(_gry.title);
-            url = _gry.link;
-            send_title = _gry.title;
-        }
+
         public void setElement(Element element)
         {_element=element;
         _title.setText(element.getElementsByTagName("title").item(0).getTextContent());

@@ -11,7 +11,6 @@ import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-
 public class Article extends AppCompatActivity {
 
     @Override
@@ -30,6 +29,7 @@ public class Article extends AppCompatActivity {
         myWebView.getSettings().setJavaScriptEnabled(true);
         setTitle(title);
 
+        //open new urls in app
         myWebView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
@@ -38,6 +38,7 @@ public class Article extends AppCompatActivity {
             }
         });
 
+        //progress bar disappears when something appears on the screen
         final ProgressBar progress = (ProgressBar) findViewById(R.id.progress2);
         GryAdapter _adapter=new GryAdapter();
         _adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
